@@ -5,11 +5,13 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json
 
-from get_yahoo_comments import get_start_of_day
-from get_yahoo_comments import get_end_of_day  
-from get_yahoo_comments import get_stock_info
-from get_yahoo_comments import score_comments
-from get_yahoo_comments import get_conversation_info
+from src import get_yahoo_comments as gyc 
+# functions tested
+# gyc.get_start_of_day
+# gyc.get_end_of_day  
+# gyc.get_stock_info
+# gyc.score_comments
+# gyc.get_conversation_info
 
 def test_get_start_of_day_no_date():
     # Get the current date and calculate expected start-of-day timestamp
@@ -18,7 +20,7 @@ def test_get_start_of_day_no_date():
     expected_timestamp = int(expected_start_of_day.timestamp())
 
     # Call the function with no arguments
-    result = get_start_of_day()
+    result = gyc.get_start_of_day()
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -30,7 +32,7 @@ def test_get_start_of_day_valid_date():
     expected_timestamp = int(expected_start_of_day.timestamp())
 
     # Call the function with the test date
-    result = get_start_of_day(test_date)
+    result = gyc.get_start_of_day(test_date)
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -41,7 +43,7 @@ def test_get_start_of_day_invalid_date():
 
     # Assert the function raises a ValueError
     with pytest.raises(ValueError, match="Invalid date format"):
-        get_start_of_day(invalid_date)
+        gyc.get_start_of_day(invalid_date)
 
 def test_get_start_of_day_edge_case_leap_year():
     # Test with a leap year date
@@ -50,7 +52,7 @@ def test_get_start_of_day_edge_case_leap_year():
     expected_timestamp = int(expected_start_of_day.timestamp())
 
     # Call the function with the leap year date
-    result = get_start_of_day(leap_date)
+    result = gyc.get_start_of_day(leap_date)
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -62,7 +64,7 @@ def test_get_start_of_day_edge_case_end_of_year():
     expected_timestamp = int(expected_start_of_day.timestamp())
 
     # Call the function with the end-of-year date
-    result = get_start_of_day(end_of_year_date)
+    result = gyc.get_start_of_day(end_of_year_date)
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -74,7 +76,7 @@ def test_get_end_of_day_no_date():
     expected_timestamp = int(expected_end_of_day.timestamp())
 
     # Call the function with no arguments
-    result = get_end_of_day()
+    result = gyc.get_end_of_day()
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -86,7 +88,7 @@ def test_get_end_of_day_no_date():
     expected_timestamp = int(expected_end_of_day.timestamp())
 
     # Call the function with no arguments
-    result = get_end_of_day()
+    result = gyc.get_end_of_day()
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -98,7 +100,7 @@ def test_get_end_of_day_valid_date():
     expected_timestamp = int(expected_end_of_day.timestamp())
 
     # Call the function with the test date
-    result = get_end_of_day(test_date)
+    result = gyc.get_end_of_day(test_date)
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -109,7 +111,7 @@ def test_get_end_of_day_invalid_date():
 
     # Assert the function raises a ValueError
     with pytest.raises(ValueError, match="Invalid date format"):
-        get_end_of_day(invalid_date)
+        gyc.get_end_of_day(invalid_date)
 
 def test_get_end_of_day_edge_case_leap_year():
     # Test with a leap year date
@@ -118,7 +120,7 @@ def test_get_end_of_day_edge_case_leap_year():
     expected_timestamp = int(expected_end_of_day.timestamp())
 
     # Call the function with the leap year date
-    result = get_end_of_day(leap_date)
+    result = gyc.get_end_of_day(leap_date)
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -130,7 +132,7 @@ def test_get_end_of_day_edge_case_end_of_year():
     expected_timestamp = int(expected_end_of_day.timestamp())
 
     # Call the function with the end-of-year date
-    result = get_end_of_day(end_of_year_date)
+    result = gyc.get_end_of_day(end_of_year_date)
 
     # Assert the result matches the expected timestamp
     assert result == expected_timestamp, f"Expected {expected_timestamp}, got {result}"
@@ -148,11 +150,11 @@ def test_get_stock_info_valid_symbol():
     }
 
     # Patch the yfinance Ticker object
-    with patch('get_yahoo_comments.yf.Ticker') as MockTicker:
+    with patch('src.get_yahoo_comments.yf.Ticker') as MockTicker:
         MockTicker.return_value.info = mock_info
 
         # Call the function with a valid symbol
-        result = get_stock_info('AAPL')
+        result = gyc.get_stock_info('AAPL')
 
         # Expected result
         expected_result = {
@@ -181,11 +183,11 @@ def test_get_stock_info_missing_data():
     }
 
     # Patch the yfinance Ticker object
-    with patch('get_yahoo_comments.yf.Ticker') as MockTicker:
+    with patch('src.get_yahoo_comments.yf.Ticker') as MockTicker:
         MockTicker.return_value.info = mock_info
 
         # Call the function with a valid symbol
-        result = get_stock_info('AAPL')
+        result = gyc.get_stock_info('AAPL')
 
         # Expected result with None for missing fields
         expected_result = {
@@ -206,11 +208,11 @@ def test_get_stock_info_invalid_symbol():
     mock_info = {}
 
     # Patch the yfinance Ticker object
-    with patch('get_yahoo_comments.yf.Ticker') as MockTicker:
+    with patch('src.get_yahoo_comments.yf.Ticker') as MockTicker:
         MockTicker.return_value.info = mock_info
 
         # Call the function with an invalid symbol
-        result = get_stock_info('INVALID')
+        result = gyc.get_stock_info('INVALID')
 
         # Expected result with None for all fields
         expected_result = {
@@ -225,10 +227,6 @@ def test_get_stock_info_invalid_symbol():
         # Assert the result matches the expected output
         assert result == expected_result, f"Expected {expected_result}, got {result}"
 
-import pytest
-from datetime import datetime
-from get_yahoo_comments import score_comments
-
 def test_score_comments_all_bullish():
     """Test with all bullish comments."""
     comments_data = [
@@ -236,7 +234,7 @@ def test_score_comments_all_bullish():
         {"additional_data": {"labels": {"ids": ["BULLISH"]}}, "time": 1700860800},  # Timestamp: 2023-11-24 00:00:00
     ]
 
-    result = score_comments(comments_data)
+    result = gyc.score_comments(comments_data)
     expected = {
         "bears": 0,
         "bear_users": [],
@@ -257,7 +255,7 @@ def test_score_comments_all_bearish():
         {"additional_data": {"labels": {"ids": ["BEARISH"]}}, "time": 1700860800},
     ]
 
-    result = score_comments(comments_data)
+    result = gyc.score_comments(comments_data)
     expected = {
         "bears": 2,
         "bear_users": [],
@@ -279,7 +277,7 @@ def test_score_comments_mixed_labels():
         {"additional_data": {"labels": {"ids": []}}, "time": 1700947200},
     ]
 
-    result = score_comments(comments_data)
+    result = gyc.score_comments(comments_data)
     expected = {
         "bears": 1,
         "bear_users": [],
@@ -301,7 +299,7 @@ def test_score_comments_missing_labels():
         {"time": 1700947200},
     ]
 
-    result = score_comments(comments_data)
+    result = gyc.score_comments(comments_data)
     expected = {
         "bears": 0,
         "bear_users": [],
@@ -319,7 +317,7 @@ def test_score_comments_empty_input():
     """Test with an empty list of comments."""
     comments_data = []
 
-    result = score_comments(comments_data)
+    result = gyc.score_comments(comments_data)
     expected = {
         "bears": 0,
         "bear_users": [],
@@ -341,7 +339,7 @@ def test_score_comments_empty_input():
 #         {"additional_data": {"labels": {"ids": ["BULLISH"]}}, "time": "invalid"},
 #     ]
 
-#     result = score_comments(comments_data)
+#     result = gyc.score_comments(comments_data)
 #     expected = {
 #         "bears": 1,
 #         "bear_users": [],
@@ -367,13 +365,13 @@ def test_get_conversation_info_valid_symbol():
     </html>
     """
     # Mock the requests.get call
-    with patch('get_yahoo_comments.requests.get') as mock_get:
+    with patch('src.get_yahoo_comments.requests.get') as mock_get:
         mock_response = MagicMock()
         mock_response.text = mock_html
         mock_get.return_value = mock_response
 
         # Call the function
-        result = get_conversation_info('AAPL')
+        result = gyc.get_conversation_info('AAPL')
 
         # Expected data
         expected_result = {"key": "value", "another_key": "another_value"}
@@ -394,14 +392,14 @@ def test_get_conversation_info_valid_symbol():
 #     </html>
 #     """
 #     # Mock the requests.get call
-#     with patch('get_yahoo_comments.requests.get') as mock_get:
+#     with patch('src.get_yahoo_comments.requests.get') as mock_get:
 #         mock_response = MagicMock()
 #         mock_response.text = mock_html
 #         mock_get.return_value = mock_response
 
 #         # Call the function and expect an AttributeError
 #         with pytest.raises(AttributeError, match="NoneType object has no attribute 'get_text'"):
-#             get_conversation_info('INVALID')
+#             gyc.get_conversation_info('INVALID')
 
 
 def test_get_conversation_info_malformed_json():
@@ -417,25 +415,25 @@ def test_get_conversation_info_malformed_json():
     </html>
     """
     # Mock the requests.get call
-    with patch('get_yahoo_comments.requests.get') as mock_get:
+    with patch('src.get_yahoo_comments.requests.get') as mock_get:
         mock_response = MagicMock()
         mock_response.text = mock_html
         mock_get.return_value = mock_response
 
         # Call the function and expect a JSONDecodeError
         with pytest.raises(json.JSONDecodeError):
-            get_conversation_info('AAPL')
+            gyc.get_conversation_info('AAPL')
 
 
 def test_get_conversation_info_http_error():
     """Test when the HTTP request fails."""
     # Mock the requests.get call to raise an HTTP error
-    with patch('get_yahoo_comments.requests.get') as mock_get:
+    with patch('src.get_yahoo_comments.requests.get') as mock_get:
         mock_get.side_effect = requests.exceptions.RequestException("HTTP error occurred")
 
         # Call the function and expect a RequestException
         with pytest.raises(requests.exceptions.RequestException, match="HTTP error occurred"):
-            get_conversation_info('AAPL')
+            gyc.get_conversation_info('AAPL')
 
 #TODO: Right now the script does not handle empty HTML - this needs added
 # def test_get_conversation_info_empty_html():
@@ -443,11 +441,11 @@ def test_get_conversation_info_http_error():
 #     # Mock an empty HTML response
 #     mock_html = ""
 #     # Mock the requests.get call
-#     with patch('get_yahoo_comments.requests.get') as mock_get:
+#     with patch('src.get_yahoo_comments.requests.get') as mock_get:
 #         mock_response = MagicMock()
 #         mock_response.text = mock_html
 #         mock_get.return_value = mock_response
 
 #         # Call the function and expect an AttributeError
 #         with pytest.raises(AttributeError, match="NoneType object has no attribute 'get_text'"):
-#             get_conversation_info('AAPL')
+#             gyc.get_conversation_info('AAPL')
