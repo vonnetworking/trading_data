@@ -38,7 +38,7 @@ def get_stock_info(symbol, start_date=False, end_date=False):
         "shares_short": "sharesShort",
     }
     result = dict()
-    if not start_date and not end_date:
+    if (time.time() - start_date) <= 86400:
         
         for key in info.keys():
             result[key] = stock.info.get(info[key])
@@ -247,7 +247,6 @@ def main(symbol, record_users, start_date, end_date):
     print(json.dumps(result))
 
     return result
-
 
 if __name__ == "__main__":
     main()
